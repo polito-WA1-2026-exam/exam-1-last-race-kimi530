@@ -1,5 +1,5 @@
-# Exam #N: "Exam Title"
-## Student: s123456 LASTNAME FIRSTNAME 
+# Exam #N: "Last Reace"
+## Student: s355079 Mosaferi Kimia 
 
 ## React Client Application Routes
 
@@ -22,9 +22,13 @@
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
-- Table `something` - contains ww qq ss
-- ...
+- Table `stations` - contains all metro stations (id, name)
+- Table `lines` - contains all metro lines (id, name)
+- Table `line_stations` - maps stations to lines with their position order (line_id, station_id, position)
+- Table `events` - contains random events with their coin effects (id, description, effect)
+- Table `users` - contains registered users with encrypted credentials (id, username, hash, salt)
+- Table `games` - contains completed games with scores (id, user_id, start_station_id, end_station_id, score, started_at)
+- Table `game_segments` - contains each step of a game with the event that occurred (id, game_id, step_order, from_station_id, to_station_id, event_id, coins_after)
 
 ## Main React Components
 
