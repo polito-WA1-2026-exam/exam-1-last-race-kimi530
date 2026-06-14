@@ -3,22 +3,106 @@
 
 ## React Client Application Routes
 
-- Route `/`: page content and purpose
-- Route `/something/:param`: page content and purpose, param specification
-- ...
+- Route `/`: instructions page, visible to all users including anonymous
+- Route `/login`: login form page
+- Route `/game/setup`: phase 1 — shows full network map with all lines and stations, logged-in only
+- Route `/game/planning`: phase 2 — 90 second timer, segment list, route building, logged-in only
+- Route `/game/execution`: phase 3 — step by step display of events and coin updates, logged-in only
+- Route `/game/result`: phase 4 — final score display and option to play again, logged-in only
+- Route `/leaderboard`: general ranking page showing best score per user, logged-in only
+
 
 ## API Server
 
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- GET `/api/something`
-  - request parameters
-  - response body content
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- ...
+### Authentication
+
+#### `POST /api/sessions`
+- Request body: `{ "username": "alice", "password": "1234" }`
+- Response body: `{ "id": 1, "username": "alice" }`
+- Status codes: `200 OK`, `401 Unauthorized`
+
+#### `GET /api/sessions/current`
+- Request parameters: none
+- Response body: `{ "id": 1, "username": "alice" }`
+- Status codes: `200 OK`, `401 Unauthorized`
+
+#### `DELETE /api/sessions/current`
+- Request parameters: none
+- Response body: none
+- Status codes: `200 OK`, `401 Unauthorized`
+
+### Network
+
+#### `GET /api/network`
+- Auth: not required
+- Request parameters: none
+- Response body:
+```json
+[
+  { "id": 1, "name": "Chitgar", "line_id": 1, "line_name": "Green", "position": 1 },
+  { "id": 2, "name": "Azadi", "line_id": 1, "line_name": "Green", "position": 2 }
+]
+```
+- Status codes: `200 OK`, `500 Internal Server Error`
+
+#### `GET /api/network/segments`
+- Auth: required
+- Request parameters: none
+- Response body:
+```json
+[
+  { "from_id": 1, "from_station": "Chitgar", "to_id": 2, "to_station": "Azadi", "line_id": 1, "line_name": "Green" }
+]
+```
+- Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
+
+### Game
+
+#### `GET /api/game/start`
+- Auth: required
+- Request parameters: none
+- Response body: `{ "startId": 1, "endId": 10 }`
+- Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
+
+#### `POST /api/game/submit`
+- Auth: required
+- Request body:
+```json
+{
+  "startId": 1,
+  "endId": 10,
+  "segments": [
+    { "fromId": 1, "toId": 2 },
+    { "fromId": 2, "toId": 6 },
+    { "fromId": 6, "toId": 10 }
+  ]
+}
+```
+- Response body (valid route):
+```json
+{
+  "valid": true,
+  "score": 18,
+  "steps": [
+    { "fromId": 1, "toId": 2, "event": "Serene Passage", "effect": 0, "coinsAfter": 20 },
+    { "fromId": 2, "toId": 6, "event": "Mistaken Departure", "effect": -2, "coinsAfter": 18 }
+  ]
+}
+```
+- Response body (invalid route): `{ "valid": false, "score": 0, "steps": [] }`
+- Status codes: `200 OK`, `401 Unauthorized`, `422 Unprocessable Entity`, `500 Internal Server Error`
+
+#### `GET /api/leaderboard`
+- Auth: required
+- Request parameters: none
+- Response body:
+```json
+[
+  { "username": "alice", "best_score": 18 },
+  { "username": "bob", "best_score": 12 }
+]
+```
+- Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
 
 ## Database Tables
 
@@ -44,8 +128,9 @@
 
 ## Users Credentials
 
-- username, password (plus any other requested info)
-- username, password (plus any other requested info)
+- alice, 1234 (has played games)
+- bob, 1234 (has played games)
+- charlie, 1234 (no games played yet)
 
 ## Use of AI Tools
 Briefly describe whether you used any AI tools (e.g., ChatGPT, GitHub Copilot, Claude) while working on this project, for which purposes (e.g., clarifying concepts, debugging, generating code), and how you verified or adapted their output.
