@@ -116,11 +116,16 @@
 
 ## Main React Components
 
-- `ListOfSomething` (in `List.js`): component purpose and main functionality
-- `GreatButton` (in `GreatButton.js`): component purpose and main functionality
-- ...
-
-(only _main_ components, minor ones may be skipped)
+- `App` (in `App.jsx`): root component, manages user authentication state, game state (gameData, result), and defines all client-side routes with protection for logged-in users
+- `Header` (in `components/Header.jsx`): navigation bar showing app title, leaderboard link, username and logout button when logged in, login button when anonymous
+- `NetworkMap` (in `components/NetworkMap.jsx`): SVG/CSS metro map showing all stations and lines; accepts `showLines` prop — when true shows full map with colored lines (setup phase), when false shows only station dots (planning phase)
+- `InstructionsPage` (in `pages/InstructionsPage.jsx`): landing page visible to all users, shows game rules and a Play button (logged-in) or Login to Play button (anonymous)
+- `LoginPage` (in `pages/LoginPage.jsx`): login form with username and password fields, handles authentication and redirects to home on success
+- `SetupPage` (in `pages/SetupPage.jsx`): shows full network map with all lines and stations, player clicks Ready to Play to fetch random start/destination and proceed to planning
+- `PlanningPage` (in `pages/PlanningPage.jsx`): shows 90 second countdown timer, station-only map, scrollable segment list to build route by clicking, selected route displayed in order, auto-submits when timer expires
+- `ExecutionPage` (in `pages/ExecutionPage.jsx`): shows journey steps one at a time with station names, random event, coin effect, and running coin total; Next button advances steps, final step shows See Result button
+- `ResultPage` (in `pages/ResultPage.jsx`): displays final coin score, shows whether route was valid or invalid, offers Play Again and Leaderboard buttons
+- `LeaderboardPage` (in `pages/LeaderboardPage.jsx`): fetches and displays best score per registered user in a ranked table with medal emojis for top 3
 
 ## Screenshot
 
