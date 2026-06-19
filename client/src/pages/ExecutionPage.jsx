@@ -28,14 +28,12 @@ const ExecutionPage = ({ result }) => {
     <Container className="mt-4" style={{ maxWidth: '600px' }}>
       <h4>🚇 Journey in progress...</h4>
 
-      {/* Progress */}
       <p className="text-muted">Step {currentStep + 1} of {result.steps.length}</p>
       <ProgressBar
         now={((currentStep + 1) / result.steps.length) * 100}
         className="mb-4"
       />
 
-      {/* Current step card */}
       <Card className="mb-3">
         <Card.Body>
           <Card.Title>
@@ -52,7 +50,6 @@ const ExecutionPage = ({ result }) => {
         </Card.Body>
       </Card>
 
-      {/* Buttons */}
       {isLastStep ? (
         <Button variant="success" onClick={() => navigate('/game/result')}>
           See Final Result →

@@ -191,18 +191,14 @@ app.get("/api/leaderboard", isLoggedIn, async (req, res) => {
 app.post("/api/game/submit", isLoggedIn, async (req, res) => {
   const { startId, endId, segments } = req.body;
 
-  if (
-    !startId ||
-    !endId ||
-    !segments ||
-    !Array.isArray(segments) ||
-    segments.length === 0
-  )
+  if (!startId || !endId || !Array.isArray(segments))
     return res.status(422).json({ error: "Invalid request body" });
 
   try {
     const allSegments = await getSegments();
-    const isValid = validateRoute(segments, startId, endId, allSegments);
+    const isValid =
+      segments.length > 0 &&
+      validateRoute(segments, startId, endId, allSegments);
 
     if (!isValid) {
       await saveGame(req.user.id, startId, endId, 0);
