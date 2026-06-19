@@ -1,95 +1,176 @@
+import { useEffect, useState } from "react";
+import { getNetwork } from "../api/Game";
+
+const stationPositions = {
+  Chitgar: { x: 80, y: 120, labelX: 80, labelY: 100, anchor: "middle" },
+  Azadi: { x: 210, y: 120, labelX: 210, labelY: 100, anchor: "middle" },
+  "Eram Sabz": { x: 340, y: 120, labelX: 340, labelY: 100, anchor: "middle" },
+  Bime: { x: 470, y: 120, labelX: 470, labelY: 100, anchor: "middle" },
+  Ekbatan: { x: 600, y: 120, labelX: 600, labelY: 100, anchor: "middle" },
+
+  Mirdamad: { x: 80, y: 260, labelX: 42, labelY: 264, anchor: "middle" },
+  Tajrish: { x: 80, y: 400, labelX: 42, labelY: 404, anchor: "middle" },
+  Gheitarie: { x: 80, y: 540, labelX: 42, labelY: 544, anchor: "middle" },
+  Gholhak: { x: 80, y: 680, labelX: 42, labelY: 684, anchor: "middle" },
+
+  Saadi: { x: 210, y: 260, labelX: 240, labelY: 264, anchor: "start" },
+  Nabard: { x: 210, y: 400, labelX: 240, labelY: 404, anchor: "start" },
+  Piroozi: { x: 210, y: 540, labelX: 240, labelY: 544, anchor: "start" },
+
+  "Amir Kabir": { x: 340, y: 400, labelX: 370, labelY: 404, anchor: "start" },
+  Molavi: { x: 340, y: 540, labelX: 370, labelY: 544, anchor: "start" },
+  Khayam: { x: 340, y: 680, labelX: 370, labelY: 684, anchor: "start" },
+};
+
+const lineColors = {
+  1: "#4CAF50",
+  2: "#2196F3",
+  3: "#FFC107",
+  4: "#E91E63",
+};
+
 function NetworkMap({ showLines = true }) {
+  const [network, setNetwork] = useState([]);
+
+  useEffect(() => {
+    getNetwork()
+      .then((data) => {
+        setNetwork(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  if (!network.length) {
+    return <div>Loading network...</div>;
+  }
+
+  const lines = network.reduce((acc, station) => {
+    if (!acc[station.line_id]) {
+      acc[station.line_id] = [];
+    }
+
+    acc[station.line_id].push(station);
+    return acc;
+  }, {});
+
+  const stationCounts = {};
+
+  network.forEach((station) => {
+    stationCounts[station.id] = (stationCounts[station.id] || 0) + 1;
+  });
+
+  const uniqueStations = Object.values(
+    network.reduce((acc, station) => {
+      acc[station.id] = station;
+      return acc;
+    }, {})
+  );
+
   return (
-    <div style={{ position: 'relative', width: '100%', height: '760px', padding: '20px', fontFamily: 'sans-serif' }}>
+    <svg width="100%" viewBox="0 0 680 780" role="img">
+      <title>Last Race metro network map</title>
 
-      {showLines && <>
-        {/* GREEN LINE */}
-        <div style={{ position: 'absolute', background: '#4CAF50', left: 89, top: 131, width: 131, height: 6, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#4CAF50', left: 219, top: 131, width: 131, height: 6, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#4CAF50', left: 349, top: 131, width: 131, height: 6, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#4CAF50', left: 479, top: 131, width: 131, height: 6, borderRadius: 3 }}/>
+      {showLines &&
+        Object.values(lines).map((stations) =>
+          stations.slice(0, -1).map((station, index) => {
+            const next = stations[index + 1];
 
-        {/* BLUE LINE */}
-        <div style={{ position: 'absolute', background: '#2196F3', left: 80, top: 149, width: 6, height: 121, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#2196F3', left: 80, top: 289, width: 6, height: 121, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#2196F3', left: 80, top: 429, width: 6, height: 121, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#2196F3', left: 80, top: 569, width: 6, height: 121, borderRadius: 3 }}/>
+            const from = stationPositions[station.name];
+            const to = stationPositions[next.name];
 
-        {/* YELLOW LINE */}
-        <div style={{ position: 'absolute', background: '#FFC107', left: 214, top: 134, width: 152, height: 6, transform: 'rotate(43deg)', transformOrigin: 'left center' }}/>
-        <div style={{ position: 'absolute', background: '#FFC107', left: 89, top: 271, width: 131, height: 6, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#FFC107', left: 210, top: 289, width: 6, height: 121, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#FFC107', left: 210, top: 429, width: 6, height: 121, borderRadius: 3 }}/>
+            if (!from || !to) return null;
 
-        {/* PINK LINE */}
-        <div style={{ position: 'absolute', background: '#E91E63', left: 219, top: 261, width: 268, height: 6, transform: 'rotate(-27deg)', transformOrigin: 'left center' }}/>
-        <div style={{ position: 'absolute', background: '#E91E63', left: 219, top: 271, width: 131, height: 6, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#E91E63', left: 340, top: 289, width: 6, height: 121, borderRadius: 3 }}/>
-        <div style={{ position: 'absolute', background: '#E91E63', left: 340, top: 429, width: 6, height: 121, borderRadius: 3 }}/>
-      </>}
+            return (
+              <line
+                key={`${station.line_id}-${station.id}-${next.id}-${index}`}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+                stroke={lineColors[station.line_id]}
+                strokeWidth="5"
+                strokeLinecap="round"
+              />
+            );
+          })
+        )}
 
-      {/* REGULAR STATIONS */}
-      {[
-        { name: 'Eram Sabz',   left: 331, top: 116, color: '#4CAF50' },
-        { name: 'Ekbatan',     left: 601, top: 116, color: '#4CAF50' },
-        { name: 'Tajrish',     left: 71,  top: 396, color: '#2196F3' },
-        { name: 'Gheitarie',   left: 71,  top: 536, color: '#2196F3' },
-        { name: 'Gholhak',     left: 71,  top: 676, color: '#2196F3' },
-        { name: 'Nabard',      left: 201, top: 396, color: '#FFC107' },
-        { name: 'Piroozi',     left: 201, top: 536, color: '#FFC107' },
-        { name: 'Amir Kabir',  left: 331, top: 396, color: '#E91E63' },
-        { name: 'Molavi',      left: 331, top: 536, color: '#E91E63' },
-        { name: 'Khayam',      left: 331, top: 676, color: '#E91E63' },
-      ].map(s => (
-        <div key={s.name} style={{ position: 'absolute', left: s.left, top: s.top, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ width: 18, height: 18, borderRadius: '50%', background: s.color, border: '3px solid white', boxShadow: '0 0 0 2px #ccc', zIndex: 2 }}/>
-          <div style={{ fontSize: 11, marginTop: 4, whiteSpace: 'nowrap', fontWeight: 500 }}>{s.name}</div>
-        </div>
-      ))}
+      {uniqueStations.map((station) => {
+        const pos = stationPositions[station.name];
 
-      {/* INTERCHANGE STATIONS */}
-      {[
-        { name: 'Chitgar',  left: 71,  top: 116, c1: '#4CAF50', c2: '#2196F3' },
-        { name: 'Azadi',    left: 201, top: 116, c1: '#4CAF50', c2: '#FFC107' },
-        { name: 'Bime',     left: 461, top: 116, c1: '#4CAF50', c2: '#E91E63' },
-        { name: 'Mirdamad', left: 71,  top: 256, c1: '#2196F3', c2: '#FFC107' },
-        { name: 'Saadi',    left: 201, top: 256, c1: '#FFC107', c2: '#E91E63' },
-      ].map(s => (
-        <div key={s.name} style={{ position: 'absolute', left: s.left, top: s.top, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{
-            width: 24, height: 24, borderRadius: '50%',
-            background: `conic-gradient(${s.c1} 0deg 180deg, ${s.c2} 180deg 360deg)`,
-            border: '3px solid white', boxShadow: '0 0 0 2px #888', zIndex: 2
-          }}/>
-          <div style={{ fontSize: 11, marginTop: 4, whiteSpace: 'nowrap', fontWeight: 600 }}>{s.name}</div>
-        </div>
-      ))}
+        if (!pos) return null;
 
-      {/* LEGEND */}
+        const isInterchange = stationCounts[station.id] > 1;
+
+        return (
+          <g key={station.id}>
+            {isInterchange ? (
+              <>
+                <circle
+                  cx={pos.x}
+                  cy={pos.y}
+                  r="14"
+                  fill="white"
+                  stroke="#888"
+                  strokeWidth="1.5"
+                />
+                <circle
+                  cx={pos.x}
+                  cy={pos.y}
+                  r="8"
+                  fill="#333"
+                  stroke="white"
+                  strokeWidth="2"
+                />
+              </>
+            ) : (
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r="8"
+                fill="white"
+                stroke="#ccc"
+                strokeWidth="1.5"
+              />
+            )}
+
+            <text
+              x={pos.labelX}
+              y={pos.labelY}
+              textAnchor={pos.anchor}
+              fontSize="11"
+              fill="var(--color-text-primary)"
+            >
+              {station.name}
+            </text>
+          </g>
+        );
+      })}
+
       {showLines && (
-        <div style={{ position: 'absolute', right: 20, top: 20, background: 'rgba(0,0,0,0.05)', padding: 12, borderRadius: 8, fontSize: 12 }}>
-          {[
-            { color: '#4CAF50', name: 'Green' },
-            { color: '#2196F3', name: 'Blue' },
-            { color: '#FFC107', name: 'Yellow' },
-            { color: '#E91E63', name: 'Pink' },
-          ].map(l => (
-            <div key={l.name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 20, height: 5, background: l.color, borderRadius: 2 }}/>
-              <span>{l.name} line</span>
-            </div>
-          ))}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'conic-gradient(#4CAF50 0deg 180deg,#2196F3 180deg)', border: '2px solid white', boxShadow: '0 0 0 1px #888' }}/>
-            <span>Interchange</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#888', border: '2px solid white' }}/>
-            <span>Station</span>
-          </div>
-        </div>
+        <>
+          <rect x="460" y="580" width="14" height="5" fill="#4CAF50" rx="2" />
+          <text x="480" y="587" fontSize="12">
+            Green line
+          </text>
+
+          <rect x="460" y="600" width="14" height="5" fill="#2196F3" rx="2" />
+          <text x="480" y="607" fontSize="12">
+            Blue line
+          </text>
+
+          <rect x="460" y="620" width="14" height="5" fill="#FFC107" rx="2" />
+          <text x="480" y="627" fontSize="12">
+            Yellow line
+          </text>
+
+          <rect x="460" y="640" width="14" height="5" fill="#E91E63" rx="2" />
+          <text x="480" y="647" fontSize="12">
+            Pink line
+          </text>
+        </>
       )}
-    </div>
+    </svg>
   );
 }
 
