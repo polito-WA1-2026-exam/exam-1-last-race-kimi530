@@ -67,7 +67,7 @@ function NetworkMap({ showLines = true }) {
   );
 
   return (
-    <svg width="100%" viewBox="0 0 680 780" role="img">
+    <svg width="65%" viewBox="0 0 680 780" role="img">
       <title>Last Race metro network map</title>
 
       {showLines &&

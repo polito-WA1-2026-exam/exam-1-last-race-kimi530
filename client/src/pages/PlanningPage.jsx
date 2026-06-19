@@ -11,7 +11,6 @@ const PlanningPage = ({ gameData, setResult }) => {
   
   const navigate = useNavigate();
 
-  // fetch segments on load
   useEffect(() => {
     const fetchSegments = async () => {
       const data = await getSegments();
@@ -20,7 +19,6 @@ const PlanningPage = ({ gameData, setResult }) => {
     fetchSegments();
   }, []);
 
-  // 90 second timer
   useEffect(() => {
     if (timeLeft === 0) {
       handleSubmit();
@@ -31,11 +29,10 @@ const PlanningPage = ({ gameData, setResult }) => {
   }, [timeLeft]);
 
   const handleSegmentClick = (seg) => {
-    // check if already selected
     const alreadySelected = selectedSegments.some(
       (s) => s.from_id === seg.from_id && s.to_id === seg.to_id,
     );
-    if (alreadySelected) return; // can't select same segment twice
+    if (alreadySelected) return;
     setSelectedSegments((prev) => [...prev, seg]);
   };
 
@@ -49,7 +46,6 @@ const PlanningPage = ({ gameData, setResult }) => {
     navigate("/game/execution");
   };
 
-  // find station name by id
   const getStationName = (id) => {
     const seg = segments.find((s) => s.from_id === id || s.to_id === id);
     if (!seg) return id;
@@ -58,12 +54,10 @@ const PlanningPage = ({ gameData, setResult }) => {
 
   return (
     <Container className="mt-4">
-      {/* Timer */}
       <Alert variant={timeLeft < 20 ? "danger" : "info"}>
         ⏱ Time left: <strong>{timeLeft} seconds</strong>
       </Alert>
 
-      {/* Start and destination */}
       <h5>
         🚉 Start: <Badge bg="success">{getStationName(gameData.startId)}</Badge>
       </h5>
@@ -72,11 +66,9 @@ const PlanningPage = ({ gameData, setResult }) => {
         <Badge bg="danger">{getStationName(gameData.endId)}</Badge>
       </h5>
 
-      {/* Map — stations only, no lines */}
       <NetworkMap showLines={false} />
 
       <div className="d-flex gap-4 mt-3">
-        {/* Segment list */}
         <div style={{ flex: 1 }}>
           <h6>Click segments to build your route:</h6>
           <ListGroup style={{ maxHeight: "300px", overflowY: "auto" }}>
@@ -102,7 +94,6 @@ const PlanningPage = ({ gameData, setResult }) => {
           </ListGroup>
         </div>
 
-        {/* Selected route */}
         <div style={{ flex: 1 }}>
           <h6>Your route:</h6>
           {selectedSegments.length === 0 ? (
