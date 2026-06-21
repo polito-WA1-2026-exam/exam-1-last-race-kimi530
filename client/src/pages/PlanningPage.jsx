@@ -84,10 +84,7 @@ const PlanningPage = ({ gameData, setResult }) => {
                   onClick={() => handleSegmentClick(seg)}
                   style={{ cursor: "pointer" }}
                 >
-                  {seg.from_station} — {seg.to_station}
-                  <Badge bg="secondary" className="ms-2">
-                    {seg.line_name}
-                  </Badge>
+                  {seg.from_station} — {seg.to_station}                
                 </ListGroup.Item>
               );
             })}
