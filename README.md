@@ -1,5 +1,6 @@
-# Exam #N: "Last Race"
-## Student: s355079 Mosaferi Kimia 
+# Exam #1: "Last Race"
+
+## Student: s355079 Mosaferi Kimia
 
 ## React Client Application Routes
 
@@ -11,22 +12,24 @@
 - Route `/game/result`: phase 4 — final score display and option to play again, logged-in only
 - Route `/leaderboard`: general ranking page showing best score per user, logged-in only
 
-
 ## API Server
 
 ### Authentication
 
 #### `POST /api/sessions`
+
 - Request body: `{ "username": "alice", "password": "1234" }`
 - Response body: `{ "id": 1, "username": "alice" }`
 - Status codes: `200 OK`, `401 Unauthorized`
 
 #### `GET /api/sessions/current`
+
 - Request parameters: none
 - Response body: `{ "id": 1, "username": "alice" }`
 - Status codes: `200 OK`, `401 Unauthorized`
 
 #### `DELETE /api/sessions/current`
+
 - Request parameters: none
 - Response body: none
 - Status codes: `200 OK`, `401 Unauthorized`
@@ -34,39 +37,67 @@
 ### Network
 
 #### `GET /api/network`
-- Auth: not required
-- Request parameters: none
-- Response body:
-```json
-[
-  { "id": 1, "name": "Chitgar", "line_id": 1, "line_name": "Green", "position": 1 },
-  { "id": 2, "name": "Azadi", "line_id": 1, "line_name": "Green", "position": 2 }
-]
-```
-- Status codes: `200 OK`, `500 Internal Server Error`
 
-#### `GET /api/network/segments`
 - Auth: required
 - Request parameters: none
 - Response body:
+
 ```json
 [
-  { "from_id": 1, "from_station": "Chitgar", "to_id": 2, "to_station": "Azadi", "line_id": 1, "line_name": "Green" }
+  {
+    "id": 1,
+    "name": "Chitgar",
+    "line_id": 1,
+    "line_name": "Green",
+    "position": 1
+  },
+  {
+    "id": 2,
+    "name": "Azadi",
+    "line_id": 1,
+    "line_name": "Green",
+    "position": 2
+  }
 ]
 ```
+
+- Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
+
+#### `GET /api/network/segments`
+
+- Auth: required
+- Request parameters: none
+- Response body:
+
+```json
+[
+  {
+    "from_id": 1,
+    "from_station": "Chitgar",
+    "to_id": 2,
+    "to_station": "Azadi",
+    "line_id": 1,
+    "line_name": "Green"
+  }
+]
+```
+
 - Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
 
 ### Game
 
 #### `GET /api/game/start`
+
 - Auth: required
 - Request parameters: none
 - Response body: `{ "startId": 1, "endId": 10 }`
 - Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
 
 #### `POST /api/game/submit`
+
 - Auth: required
 - Request body:
+
 ```json
 {
   "startId": 1,
@@ -78,30 +109,48 @@
   ]
 }
 ```
+
 - Response body (valid route):
+
 ```json
 {
   "valid": true,
   "score": 18,
   "steps": [
-    { "fromId": 1, "toId": 2, "event": "Serene Passage", "effect": 0, "coinsAfter": 20 },
-    { "fromId": 2, "toId": 6, "event": "Mistaken Departure", "effect": -2, "coinsAfter": 18 }
+    {
+      "fromId": 1,
+      "toId": 2,
+      "event": "Serene Passage",
+      "effect": 0,
+      "coinsAfter": 20
+    },
+    {
+      "fromId": 2,
+      "toId": 6,
+      "event": "Mistaken Departure",
+      "effect": -2,
+      "coinsAfter": 18
+    }
   ]
 }
 ```
+
 - Response body (invalid route): `{ "valid": false, "score": 0, "steps": [] }`
 - Status codes: `200 OK`, `401 Unauthorized`, `422 Unprocessable Entity`, `500 Internal Server Error`
 
 #### `GET /api/leaderboard`
+
 - Auth: required
 - Request parameters: none
 - Response body:
+
 ```json
 [
   { "username": "alice", "best_score": 18 },
   { "username": "bob", "best_score": 12 }
 ]
 ```
+
 - Status codes: `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
 
 ## Database Tables
@@ -127,9 +176,23 @@
 - `ResultPage` (in `pages/ResultPage.jsx`): displays final coin score, shows whether route was valid or invalid, offers Play Again and Leaderboard buttons
 - `LeaderboardPage` (in `pages/LeaderboardPage.jsx`): fetches and displays best score per registered user in a ranked table with medal emojis for top 3
 
-## Screenshot
+## Screenshots
 
-![Screenshot](./img/screenshot.jpg)
+### Leaderboard Page
+
+![Leaderboard](./img/LeaderBoard.png)
+
+### Game Execution Phase
+
+![Execution](./img/ExecutionPhase.png)
+
+### Game Setup Phase
+
+![Setup](./img/SetupPhase.png)
+
+### Game Planning Phase
+
+![Planning](./img/PlanningPhase.png)
 
 ## Users Credentials
 
@@ -138,5 +201,9 @@
 - charlie, 1234 (no games played yet)
 
 ## Use of AI Tools
-Briefly describe whether you used any AI tools (e.g., ChatGPT, GitHub Copilot, Claude) while working on this project, for which purposes (e.g., clarifying concepts, debugging, generating code), and how you verified or adapted their output.
-If you did not use any AI tools, simply state so.
+
+GitHub Copilot was used only during the final review phase of the project.
+
+The entire application, including the architecture, database design, API design, game logic, React components, and implementation details, was developed independently. After completing the project, GitHub Copilot was occasionally consulted to perform a final code review, identify potential bugs, highlight possible edge cases, and suggest minor improvements related to code quality and maintainability.
+
+All suggestions were carefully evaluated before adoption, and the final code, design decisions, and implementation remain entirely my own responsibility.

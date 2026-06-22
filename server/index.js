@@ -1,7 +1,6 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { check, validationResult } from "express-validator";
 import passport from "passport";
 import LocalStrategy from "passport-local";
 import session from "express-session";
@@ -117,20 +116,7 @@ const isLoggedIn = (req, res, next) => {
   return res.status(401).json({ error: "Not authorized" });
 };
 
-const onValidationErrors = (validationResult, res) => {
-  const errors = validationResult.formatWith(errorFormatter);
-  return res.status(422).json({ validationErrors: errors.mapped() });
-};
 
-// Only keep the error message in the response
-const errorFormatter = ({ msg }) => {
-  return msg;
-};
-
-/*** Users APIs ***/
-
-// POST /api/sessions
-// This route is used for performing login.
 app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
@@ -158,7 +144,7 @@ app.delete("/api/sessions/current", (req, res) => {
   });
 });
 
-app.get("/api/network", async (req, res) => {
+app.get("/api/network", isLoggedIn, async (req, res) => {
   try {
     const network = await getFullNetwork();
     res.json(network);
