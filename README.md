@@ -202,7 +202,7 @@
 
 ## Use of AI Tools
 
-GitHub Copilot was used only during the final review phase of the project.
+GitHub AI was used only during the final review phase of the project.
 
 The entire application, including the architecture, database design, API design, game logic, React components, and implementation details, was developed independently. After completing the project, GitHub Copilot was occasionally consulted to perform a final code review, identify potential bugs, highlight possible edge cases, and suggest minor improvements related to code quality and maintainability.
 
