@@ -17,7 +17,13 @@ import {
 
 const validateRoute = (segments, startId, endId, allSegments) => {
   if (segments[0].fromId !== startId) return false;
+
   if (segments[segments.length - 1].toId !== endId) return false;
+
+  for (let i = 0; i < segments.length - 1; i++) {
+    if (segments[i].toId !== segments[i + 1].fromId) return false;
+  }
+
   const allReal = segments.every((seg) =>
     allSegments.some(
       (valid) =>
