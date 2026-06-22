@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
-import { getUserInfo, logOut } from "./api/auth";
+import { getUserInfo, logOut } from "./api/Auth";
 import Header from "./components/Header";
 import InstructionsPage from "./pages/InstructionsPage";
 import LoginPage from "./pages/LoginPage";

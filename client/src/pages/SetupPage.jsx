@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Container } from 'react-bootstrap';
 import { startGame } from '../api/Game';
-import NetworkMap from '../components/NetworkMap';
+import NetworkMap from '../components/Networkmap';
 
 const SetupPage = ({ setGameData }) => {
   const navigate = useNavigate();

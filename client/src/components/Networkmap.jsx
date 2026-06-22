@@ -63,7 +63,7 @@ function NetworkMap({ showLines = true }) {
     network.reduce((acc, station) => {
       acc[station.id] = station;
       return acc;
-    }, {})
+    }, {}),
   );
 
   return (
@@ -92,7 +92,7 @@ function NetworkMap({ showLines = true }) {
                 strokeLinecap="round"
               />
             );
-          })
+          }),
         )}
 
       {uniqueStations.map((station) => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, Button, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { logIn } from "../api/auth";
+import { logIn } from "../api/Auth";
 
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState("");

@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, ListGroup, Badge, Alert } from "react-bootstrap";
 import { getSegments, submitRoute } from "../api/Game";
-import NetworkMap from "../components/NetworkMap";
+import NetworkMap from "../components/Networkmap";
 
 const PlanningPage = ({ gameData, setResult }) => {
   const [segments, setSegments] = useState([]);
   const [selectedSegments, setSelectedSegments] = useState([]);
   const [timeLeft, setTimeLeft] = useState(90);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,14 +20,34 @@ const PlanningPage = ({ gameData, setResult }) => {
     fetchSegments();
   }, []);
 
+  const handleSubmit = useCallback(async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    const route = selectedSegments.map((s) => ({
+      fromId: s.from_id,
+      toId: s.to_id,
+    }));
+
+    try {
+      const result = await submitRoute(gameData.startId, gameData.endId, route);
+      setResult(result);
+      navigate("/game/execution");
+    } catch (err) {
+      setIsSubmitting(false);
+      console.error(err);
+    }
+  }, [isSubmitting, selectedSegments, gameData, setResult, navigate]);
+
   useEffect(() => {
+    if (isSubmitting) return;
     if (timeLeft === 0) {
       handleSubmit();
       return;
     }
     const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft]);
+  }, [timeLeft, isSubmitting, handleSubmit]);
 
   const handleSegmentClick = (seg) => {
     const alreadySelected = selectedSegments.some(
@@ -36,15 +57,7 @@ const PlanningPage = ({ gameData, setResult }) => {
     setSelectedSegments((prev) => [...prev, seg]);
   };
 
-  const handleSubmit = async () => {
-    const route = selectedSegments.map((s) => ({
-      fromId: s.from_id,
-      toId: s.to_id,
-    }));
-    const result = await submitRoute(gameData.startId, gameData.endId, route);
-    setResult(result);
-    navigate("/game/execution");
-  };
+
 
   const getStationName = (id) => {
     const seg = segments.find((s) => s.from_id === id || s.to_id === id);
@@ -84,7 +97,7 @@ const PlanningPage = ({ gameData, setResult }) => {
                   onClick={() => handleSegmentClick(seg)}
                   style={{ cursor: "pointer" }}
                 >
-                  {seg.from_station} — {seg.to_station}                
+                  {seg.from_station} — {seg.to_station}
                 </ListGroup.Item>
               );
             })}
@@ -119,8 +132,12 @@ const PlanningPage = ({ gameData, setResult }) => {
         </div>
       </div>
 
-      <Button className="mt-3" onClick={handleSubmit}>
-        Submit Route
+      <Button
+        className="mt-3"
+        onClick={handleSubmit}
+        disabled={isSubmitting || timeLeft === 0}
+      >
+        {isSubmitting ? "Submitting..." : "Submit Route"}
       </Button>
     </Container>
   );
