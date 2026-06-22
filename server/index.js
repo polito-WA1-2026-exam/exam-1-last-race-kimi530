@@ -33,7 +33,11 @@ const validateRoute = (segments, startId, endId, allSegments) => {
   );
   if (!allReal) return false;
 
-  const keys = segments.map((s) => `${s.fromId}-${s.toId}`);
+  const keys = segments.map((s) => {
+    const a = Math.min(s.fromId, s.toId);
+    const b = Math.max(s.fromId, s.toId);
+    return `${a}-${b}`;
+  });
   const uniqueKeys = new Set(keys);
   if (uniqueKeys.size !== segments.length) return false;
 

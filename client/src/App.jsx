@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
-import { getUserInfo } from "./api/auth";
+import { getUserInfo, logOut } from "./api/auth";
 import Header from "./components/Header";
 import InstructionsPage from "./pages/InstructionsPage";
 import LoginPage from "./pages/LoginPage";
@@ -29,6 +29,11 @@ function App() {
       });
   }, []);
 
+  const handleLogout = async () => {
+    await logOut();
+    setUser(null);
+  };
+
   if (checking) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -41,7 +46,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header user={user} onLogout={() => setUser(null)} />
+      <Header user={user} onLogout={handleLogout} />
       <Routes>
         <Route path="/" element={<InstructionsPage user={user} />} />
         <Route

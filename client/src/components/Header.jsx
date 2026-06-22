@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 function Header({ user, onLogout }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    onLogout();
-    navigate("/");
-  };
+ const handleLogout = async () => {
+    await onLogout(); 
+    navigate('/');
+};
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
